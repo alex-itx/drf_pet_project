@@ -1,7 +1,7 @@
 from django.core.serializers import serialize
 from django.forms import model_to_dict
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Women
@@ -9,29 +9,16 @@ from .serializers import WomenSerializer
 
 
 
-# вью для таблицы women с использованием ListCreateAPIView
-class WomenAPIList(generics.ListCreateAPIView):
+# вью для таблицы women с использованием ModelViewSet
+class WomenViewSet(viewsets.ModelViewSet):
     """
-    ListCreateAPIView - класс для чтения (get-запрос) и создания списка данных (post-запрос)
-    """
-    queryset = Women.objects.all()
-    serializer_class = WomenSerializer
-
-
-# вью для таблицы women с использованием UpdateAPIView
-class WomenAPIUpdate(generics.UpdateAPIView):
-    """
-    UpdateAPIView - класс для изменения записи таблицы (put/patch-запрос)
-    """
-    queryset = Women.objects.all()
-    serializer_class = WomenSerializer
-
-
-# вью для таблицы women с использованием RetrieveUpdateDestroyAPIView
-class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    RetrieveUpdateDestroyAPIView - класс для чтения, изменения и удаления отдельной записи таблицы
-    (get, put/patch, delete -запрос)
+    ModelViewSet - класс вьюсет, берет на себя весь функционал всех классов вью с моделью
+    благодаря тому, что использует множество миксинов:
+        mixins.CreateModelMixin, - создание записи
+        mixins.RetrieveModelMixin, - выделение записи
+        mixins.UpdateModelMixin, - изменение записи
+        mixins.DestroyModelMixin, - удаление записи
+        mixins.ListModelMixin, - чтение списка записей
     """
     queryset = Women.objects.all()
     serializer_class = WomenSerializer
@@ -48,6 +35,41 @@ class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
+
+
+
+
+
+
+
+
+
+# # вью для таблицы women с использованием ListCreateAPIView
+# class WomenAPIList(generics.ListCreateAPIView):
+#     """
+#     ListCreateAPIView - класс для чтения (get-запрос) и создания списка данных (post-запрос)
+#     """
+#     queryset = Women.objects.all()
+#     serializer_class = WomenSerializer
+#
+#
+# # вью для таблицы women с использованием UpdateAPIView
+# class WomenAPIUpdate(generics.UpdateAPIView):
+#     """
+#     UpdateAPIView - класс для изменения записи таблицы (put/patch-запрос)
+#     """
+#     queryset = Women.objects.all()
+#     serializer_class = WomenSerializer
+#
+#
+# # вью для таблицы women с использованием RetrieveUpdateDestroyAPIView
+# class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     """
+#     RetrieveUpdateDestroyAPIView - класс для чтения, изменения и удаления отдельной записи таблицы
+#     (get, put/patch, delete -запрос)
+#     """
+#     queryset = Women.objects.all()
+#     serializer_class = WomenSerializer
 
 
 
