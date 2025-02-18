@@ -1,9 +1,78 @@
+import io
+
 from rest_framework import serializers
+from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
 
 from .models import Women
 
-# Сериализатор для таблицы women
-class WomenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Women
-        fields = ['title', 'cat_id']
+# # создадим иметацию модели
+# class WomenModel:
+#     def __init__(self, title, content):
+#         self.title = title
+#         self.content = content
+
+# селиализатор отнаследованный от базового класса Serializer
+class WomenSerializer(serializers.Serializer):
+    # Вручную пропишем поля для котороый будут сериализироваться
+    title = serializers.CharField(max_length=255)
+    content = serializers.CharField()
+    time_create = serializers.DateTimeField(read_only=True)
+    time_update = serializers.DateTimeField(read_only=True)
+    is_published = serializers.BooleanField(default=True)
+    cat_id = serializers.IntegerField()
+
+# def encode():
+#     """
+#     encode() - функция кодирования данных в json формат
+#     model - объект модели
+#     model_sr - объект сериализации объекта модели
+#         .data - параметр класса WomenSerializer, возвращает данные (в словаре) объекта класса, а не его самого
+#     json - данные в json формате
+#         JSONRenderer() - преобразовывает объект сериализации в json строку
+#         render() - принимает объект сериализации, чтобы передать его в JSONRenderer()
+#     """
+#     model = WomenModel('Alex', 'superprogramer')
+#     model_sr = WomenSerializer(model)
+#     print(model_sr.data, type(model_sr.data), sep='\n')
+#     json = JSONRenderer().render(model_sr.data)
+#     print(json)
+#
+#
+# def decode():
+#     """
+#     decode() - функция декодирования json данных в словарь
+#     stream - json данные
+#         io.BytesIO() - обрабатывает json данные
+#     data - данные в виде словаря
+#         JSONParser() - переводит json данные в словарь
+#         parse - обрабатывает json данные и передаёт из в JSONParser()
+#     serializer - обект сериализатора с json внутри
+#         data - параметр для хранения данных
+#     validated_data - параметр в WomenSerializer, который хранит в себе данные, появляется после проверки на валидацию
+#     """
+#     stream = io.BytesIO(b'{"title":"Alex","content":"superprogramer"}')
+#     data = JSONParser().parse(stream)
+#     serializer = WomenSerializer(data=data)
+#     serializer.is_valid()
+#     print(serializer.validated_data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # Сериализатор для таблицы women
+# class WomenSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Women
+#         fields = ['title', 'cat_id']
