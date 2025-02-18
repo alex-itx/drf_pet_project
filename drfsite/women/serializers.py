@@ -6,11 +6,7 @@ from rest_framework.renderers import JSONRenderer
 
 from .models import Women
 
-# # создадим иметацию модели
-# class WomenModel:
-#     def __init__(self, title, content):
-#         self.title = title
-#         self.content = content
+
 
 # селиализатор отнаследованный от базового класса Serializer
 class WomenSerializer(serializers.Serializer):
@@ -22,6 +18,55 @@ class WomenSerializer(serializers.Serializer):
     is_published = serializers.BooleanField(default=True)
     cat_id = serializers.IntegerField()
 
+
+    def create(self, validated_data):
+        """
+        create() - метод для сохранения данных в бд
+            validated_data - принимает валидированные данные, которые создаются после валидации во вью
+        :return - создаёт запись в бд, при помощи ОРМ функции create
+        """
+        return Women.objects.create(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        """
+        update() - используется для изменения записей
+            В него мы передаём каждое поле как объект instance, потом сохраняем его и возвращаем
+        :param instance: объект записи, через именнованный параметр указывается поле с тем же именем
+        :return: возвращает объект instance
+        """
+        instance.title =  validated_data.get('title', instance.title)
+        instance.content = validated_data.get('content', instance.content)
+        instance.time_update = validated_data.get('time_update', instance.time_update)
+        instance.is_published = validated_data.get('is_published', instance.is_published)
+        instance.cat_id = validated_data.get('cat_id', instance.cat_id)
+        instance.save()
+        return instance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # создадим иметацию модели
+# class WomenModel:
+#     def __init__(self, title, content):
+#         self.title = title
+#         self.content = content
+#
+#
 # def encode():
 #     """
 #     encode() - функция кодирования данных в json формат

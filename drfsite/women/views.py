@@ -28,24 +28,63 @@ class WomenAPIView(APIView):
         и значеним - значением полей, и таким образом создать новую запись в таблице
         postman->post->Body->raw->json
         метод  post() - он принимает и обрабатывает post-запрос
-        serializer - хранит в себе данные из запроса, чтобы потом валидировать их
-        post_new - объект модели Women
-            Women.objects.create() - создаёт новую запись в таблице с переданными полями
-                request.data['<имя поля>'] - определяет поле таблицы
+        serializer - хранит в себе данные из запроса, чтобы потом валидировать их,
+        а потом сохранить как объект модели
         return - возвращает данные добавленные в таблицу
-            model_to_dict - преобразует QuerySet в json
 
         """
         serializer = WomenSerializer(data=request.data)
         serializer.is_valid()
+        serializer.save()
 
-        post_new = Women.objects.create(
-            title = request.data['title'],
-            content = request.data['content'],
-            cat_id = request.data['cat_id']
-        )
+        return Response({'post': serializer.data})
 
-        return Response({'post': WomenSerializer(post_new).data})
+
+    def put(self, request, *args, **kwargs):
+        """
+        put() - используется для изменения записей в бд
+        в функции сначала определяется поле из запроса (равное конвертеру),
+        после проверяется есть ли оно в таблице,
+        если есть записываем строку с таким полем,
+        далее селиалезируем строку,
+        сохраняем её - вызываем метод update из сериализатора
+
+        :return: возвращаем сериализованные данные
+        """
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method PUT not allowed"})
+
+        try:
+            instance = Women.objects.get(pk=pk)
+        except:
+            return Response({"error": "Object does not exists"})
+
+        serializer = WomenSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'post': serializer.data})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # # вью для таблицы women
