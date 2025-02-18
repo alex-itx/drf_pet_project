@@ -18,9 +18,23 @@ class WomenAPIList(generics.ListCreateAPIView):
     serializer_class = WomenSerializer
 
 
+# вью для таблицы women с использованием UpdateAPIView
+class WomenAPIUpdate(generics.UpdateAPIView):
+    """
+    UpdateAPIView - класс для изменения записи таблицы (put/patch-запрос)
+    """
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
 
 
-
+# вью для таблицы women с использованием RetrieveUpdateDestroyAPIView
+class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    RetrieveUpdateDestroyAPIView - класс для чтения, изменения и удаления отдельной записи таблицы
+    (get, put/patch, delete -запрос)
+    """
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
 
 
 
