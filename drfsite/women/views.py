@@ -4,6 +4,7 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +12,14 @@ from .models import Women, Category
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import WomenSerializer
 
+
+class WomenAPIListPagination(PageNumberPagination):
+    """
+    Собственный класс пагинатор, наследованный от PageNumberPagination
+    """
+    page_size = 3  # количество элементов в одной странице
+    page_size_query_param = 'page_size' # название параметра для урл - указание ручной пагинации
+    max_page_size = 100 # максимальное значение ручной пагинации
 
 
 
@@ -21,6 +30,7 @@ class WomenAPIList(generics.ListCreateAPIView):
     # permission_classes - ограничения пользователя
     # IsAuthenticatedOrReadOnly - только для чтения если не авторизован
     permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = WomenAPIListPagination # передаём наш класс пагинации
 
 class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Women.objects.all()
