@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'women.apps.WomenConfig',
-    'rest_framework'
+    'rest_framework', # регистрируем рест фреймворк
+    'rest_framework.authtoken', # регистрируем стандартную таблицу по созданию токенов
+    'djoser', # токены djoser
 ]
 
 MIDDLEWARE = [
@@ -131,5 +133,10 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSIONS_CLASSES': [
         'rest_framework.permissions.AllowAny', # глобальное предоставление всех прав для всех пользователь
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # регистрируем возможность аутентификации по токену
+        'rest_framework.authentication.BasicAuthentication',  # регистрируем возможность базовой аутентификации
+        'rest_framework.authentication.SessionAuthentication',  # регистрируем возможность аутентификации через сессию
     ]
 }
