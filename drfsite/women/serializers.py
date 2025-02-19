@@ -7,6 +7,8 @@ from .models import Women
 
 # Сериализатор для таблицы women
 class WomenSerializer(serializers.ModelSerializer):
+    # Делаем так, чтобы поле для ввода/выбора пользователя, было скрытым, а его дефолтное значение = юзеру в запросе
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault)
     class Meta:
         model = Women
         fields = '__all__'

@@ -3,56 +3,33 @@ from django.forms import model_to_dict
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Women, Category
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import WomenSerializer
 
 
 
-# вью для таблицы women с использованием ModelViewSet
-class WomenViewSet(viewsets.ModelViewSet):
-    """
-    ModelViewSet - класс вьюсет, берет на себя весь функционал всех классов вью с моделью
-    благодаря тому, что использует множество миксинов:
-        mixins.CreateModelMixin, - создание записи
-        mixins.RetrieveModelMixin, - выделение записи
-        mixins.UpdateModelMixin, - изменение записи
-        mixins.DestroyModelMixin, - удаление записи
-        mixins.ListModelMixin, - чтение списка записей
-    """
-    # queryset = Women.objects.all() # Если у нас есть собственное определение вывода записей, queryset не нужен
+
+
+class WomenAPIList(generics.ListCreateAPIView):
+    queryset = Women.objects.all()
     serializer_class = WomenSerializer
+    # permission_classes - ограничения пользователя
+    # IsAuthenticatedOrReadOnly - только для чтения если не авторизован
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
-    def get_queryset(self):
-        """
-        Если нам нужно собственное определение вывода записей, создаётся специальный метод для вывода
-        :return 1: возвращает первые три записи таблицы
-        :return 1: возвращает конкретную запись
-        Если у нас нет в классе параметра queryset, в роутере обязательно нужно указать параметр basename
-        pk - забирает индекс из реквеста на слуйчай, если мы хотим иметь возможность обращаться к конкретной записи
-        после этого осуществляется проверка на совпадение айдишника в таблице
-        """
-        pk = self.kwargs.get('pk')
-        if not pk:
-            return Women.objects.all()[:3]
+class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsOwnerOrReadOnly, )
 
-        return Women.objects.filter(pk=pk)
-
-    @action(methods = ['get'], detail=True)
-    def category(self, requests, pk=None):
-        """
-        @action - декоратор из библиотеки rest_framework, он нужен для того, чтобы определить новый
-        маршрут внутри роутера. В данном случае women/category
-            methods - определяет какие методы запроса, можно использовать в маршруте
-            detail - определяет, можно ли обращаться к конкретной записи, например по pk women/2/category
-        category() - функция в которой мы определяем - что будет возвращаться в маршруте
-        Название функции и будет являться префиксом url
-            pk - параметр который определяет параметр маршрута по индексу таблицы
-        cats - берёт запись (будем передовать конкретную запись таблицы)
-        """
-        cats = Category.objects.get(pk=pk)
-        return Response({'cats': cats.name})
+class WomenAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 
@@ -71,6 +48,117 @@ class WomenViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # вью для таблицы women с использованием ModelViewSet
+# class WomenViewSet(viewsets.ModelViewSet):
+#     """
+#     ModelViewSet - класс вьюсет, берет на себя весь функционал всех классов вью с моделью
+#     благодаря тому, что использует множество миксинов:
+#         mixins.CreateModelMixin, - создание записи
+#         mixins.RetrieveModelMixin, - выделение записи
+#         mixins.UpdateModelMixin, - изменение записи
+#         mixins.DestroyModelMixin, - удаление записи
+#         mixins.ListModelMixin, - чтение списка записей
+#     """
+#     # queryset = Women.objects.all() # Если у нас есть собственное определение вывода записей, queryset не нужен
+#     serializer_class = WomenSerializer
+#
+#     def get_queryset(self):
+#         """
+#         Если нам нужно собственное определение вывода записей, создаётся специальный метод для вывода
+#         :return 1: возвращает первые три записи таблицы
+#         :return 1: возвращает конкретную запись
+#         Если у нас нет в классе параметра queryset, в роутере обязательно нужно указать параметр basename
+#         pk - забирает индекс из реквеста на слуйчай, если мы хотим иметь возможность обращаться к конкретной записи
+#         после этого осуществляется проверка на совпадение айдишника в таблице
+#         """
+#         pk = self.kwargs.get('pk')
+#         if not pk:
+#             return Women.objects.all()[:3]
+#
+#         return Women.objects.filter(pk=pk)
+#
+#     @action(methods = ['get'], detail=True)
+#     def category(self, requests, pk=None):
+#         """
+#         @action - декоратор из библиотеки rest_framework, он нужен для того, чтобы определить новый
+#         маршрут внутри роутера. В данном случае women/category
+#             methods - определяет какие методы запроса, можно использовать в маршруте
+#             detail - определяет, можно ли обращаться к конкретной записи, например по pk women/2/category
+#         category() - функция в которой мы определяем - что будет возвращаться в маршруте
+#         Название функции и будет являться префиксом url
+#             pk - параметр который определяет параметр маршрута по индексу таблицы
+#         cats - берёт запись (будем передовать конкретную запись таблицы)
+#         """
+#         cats = Category.objects.get(pk=pk)
+#         return Response({'cats': cats.name})
 
 
 # # вью для таблицы women с использованием ListCreateAPIView
