@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework import routers
 from rest_framework.routers import SimpleRouter, Route
+from rest_framework_simplejwt.views import TokenVerifyView, TokenRefreshView, TokenObtainPairView
 
 from women.views import WomenAPIList, WomenAPIUpdate, WomenAPIDestroy
 
@@ -17,6 +18,9 @@ urlpatterns = [
     path('api/v1/womendelete/<int:pk>/', WomenAPIDestroy.as_view()),
     path('api/v1/auth/', include('djoser.urls')), # корневой маршрут авторизации через токен
     re_path(r'^auth/', include('djoser.urls.authtoken')), # все маршруты авторизации с токеном
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # маршрут авторизации через JWT токен
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # маршрут обновление JWT токена
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'), # дополнительный маршрут для JWT токена
     # path('api/v1/', include(router.urls))
     # path('api/v1/womenlist/', WomenViewSet.as_view({'get': 'list'})),
     # path('api/v1/womenlist/<int:pk>/', WomenViewSet.as_view({'put': 'update'})),
