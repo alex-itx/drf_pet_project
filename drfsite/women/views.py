@@ -2,9 +2,10 @@ from django.core.serializers import serialize
 from django.forms import model_to_dict
 from django.shortcuts import render
 from rest_framework import generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Women
+from .models import Women, Category
 from .serializers import WomenSerializer
 
 
@@ -20,10 +21,38 @@ class WomenViewSet(viewsets.ModelViewSet):
         mixins.DestroyModelMixin, - удаление записи
         mixins.ListModelMixin, - чтение списка записей
     """
-    queryset = Women.objects.all()
+    # queryset = Women.objects.all() # Если у нас есть собственное определение вывода записей, queryset не нужен
     serializer_class = WomenSerializer
 
+    def get_queryset(self):
+        """
+        Если нам нужно собственное определение вывода записей, создаётся специальный метод для вывода
+        :return 1: возвращает первые три записи таблицы
+        :return 1: возвращает конкретную запись
+        Если у нас нет в классе параметра queryset, в роутере обязательно нужно указать параметр basename
+        pk - забирает индекс из реквеста на слуйчай, если мы хотим иметь возможность обращаться к конкретной записи
+        после этого осуществляется проверка на совпадение айдишника в таблице
+        """
+        pk = self.kwargs.get('pk')
+        if not pk:
+            return Women.objects.all()[:3]
 
+        return Women.objects.filter(pk=pk)
+
+    @action(methods = ['get'], detail=True)
+    def category(self, requests, pk=None):
+        """
+        @action - декоратор из библиотеки rest_framework, он нужен для того, чтобы определить новый
+        маршрут внутри роутера. В данном случае women/category
+            methods - определяет какие методы запроса, можно использовать в маршруте
+            detail - определяет, можно ли обращаться к конкретной записи, например по pk women/2/category
+        category() - функция в которой мы определяем - что будет возвращаться в маршруте
+        Название функции и будет являться префиксом url
+            pk - параметр который определяет параметр маршрута по индексу таблицы
+        cats - берёт запись (будем передовать конкретную запись таблицы)
+        """
+        cats = Category.objects.get(pk=pk)
+        return Response({'cats': cats.name})
 
 
 
